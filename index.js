@@ -24,6 +24,7 @@ mongoose.connect(process.env.MONGO_URI)
 // --- 2. View Engine Setup ---
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.set('trust proxy', 1);
 
 // --- 3. Middleware ---
 app.use(express.json()); 

@@ -11,15 +11,17 @@ export const sessionConfig = session({
     secret: process.env.SESSION_SECRET || 'unichem_ghana_secret_key',
     resave: false,
     saveUninitialized: false,
+    proxy: true, // ADD THIS: Vital for live hosting (Render/Railway/etc)
     store: MongoStore.create({ 
         mongoUrl: process.env.MONGO_URI,
-        ttl: 24 * 60 * 60 // Sessions expire in 1 day in the DB
+        ttl: 24 * 60 * 60 
     }),
     cookie: { 
-        maxAge: 1000 * 60 * 60 * 24, // 1 day
-        httpOnly: true, // Prevents client-side JS from reading the cookie
-        secure: isProduction, // ONLY true if using HTTPS (Production)
-        sameSite: isProduction ? 'none' : 'lax' // Required for cross-site cookies in some hosting environments
+        maxAge: 1000 * 60 * 60 * 24,
+        httpOnly: true,
+        // If your live link is NOT https, change 'isProduction' to false temporarily
+        secure: isProduction, 
+        sameSite: isProduction ? 'none' : 'lax'
     }
 });
 
