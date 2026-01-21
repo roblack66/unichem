@@ -1,36 +1,28 @@
-import nodemailer from 'nodemailer';
-
 export const sendEmail = async (to, subject, htmlContent) => {
-    const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false, // Must be false for port 587
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+            'accept': 'application/json',
+            'api-key': process.env.BREVO_API_KEY,
+            'content-type': 'application/json'
         },
-        // Force the connection to wait longer and ignore certificate issues
-        connectionTimeout: 20000, 
-        greetingTimeout: 20000,
-        tls: {
-            rejectUnauthorized: false,
-            minVersion: 'TLSv1.2'
-        }
+        body: JSON.stringify({
+            sender: { 
+                name: "Unichem HR", 
+                email: process.env.EMAIL_USER // Your verified email in Brevo
+            },
+            to: Array.isArray(to) ? to.map(email => ({ email })) : [{ email: to }],
+            subject: subject,
+            htmlContent: htmlContent
+        })
     });
 
-    const mailOptions = {
-        from: `"Unichem HR" <${process.env.EMAIL_USER}>`,
-        to: Array.isArray(to) ? to.join(',') : to,
-        subject: subject,
-        html: htmlContent,
-    };
-
-    try {
-        const info = await transporter.sendMail(mailOptions);
-        console.log("✅ Email sent successfully");
-        return info;
-    } catch (err) {
-        console.error("❌ FINAL SMTP ERROR:", err.code, err.message);
-        throw err;
+    if (!response.ok) {
+        const error = await response.json();
+        console.error("❌ BREVO API ERROR:", error);
+        throw new Error('Failed to send email via API');
     }
+
+    console.log("✅ Email sent via API successfully");
+    return await response.json();
 };
