@@ -1,17 +1,21 @@
 import nodemailer from 'nodemailer';
 
 export const sendEmail = async (to, subject, htmlContent) => {
-    // We use 'service' which is optimized for live cloud environments like Render
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // Must be false for port 587
         auth: {
             user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS, // Must be the 16-character App Password
+            pass: process.env.EMAIL_PASS,
         },
-        // These settings prevent the ETIMEDOUT error by increasing the wait time
-        connectionTimeout: 10000, 
-        greetingTimeout: 10000,
-        socketTimeout: 10000,
+        // Force the connection to wait longer and ignore certificate issues
+        connectionTimeout: 20000, 
+        greetingTimeout: 20000,
+        tls: {
+            rejectUnauthorized: false,
+            minVersion: 'TLSv1.2'
+        }
     });
 
     const mailOptions = {
@@ -26,8 +30,7 @@ export const sendEmail = async (to, subject, htmlContent) => {
         console.log("✅ Email sent successfully");
         return info;
     } catch (err) {
-        // Detailed logging to see if it's still a connection issue or an auth issue
-        console.error("❌ NODEMAILER LIVE ERROR:", err.code, err.command);
+        console.error("❌ FINAL SMTP ERROR:", err.code, err.message);
         throw err;
     }
 };
