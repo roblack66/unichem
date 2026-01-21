@@ -1,0 +1,98 @@
+<%- include('partials/header') %>
+
+<div class="max-w-4xl mx-auto px-4">
+    <% if (user && user.role === 'admin') { %>
+        <div class="mb-10 flex flex-wrap items-center justify-between px-6 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm">
+            <div class="flex items-center space-x-3">
+                <div class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-40"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </div>
+                <p class="text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+                    Automation: <span class="text-green-600 ml-1">Active</span>
+                </p>
+            </div>
+
+            <div class="flex items-center space-x-6">
+                <div class="flex items-center text-slate-400">
+                    <i class="fas fa-clock text-[10px] mr-2"></i>
+                    <p class="text-xs">
+                        Last Run: 
+                        <span class="font-semibold text-slate-700">
+                            <%= lastRun ? new Date(lastRun).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '' %>
+                        </span>
+                    </p>
+                </div>
+                <div class="hidden md:block h-4 w-px bg-slate-200"></div>
+                <div class="hidden md:flex items-center text-slate-400">
+                    <i class="fas fa-calendar-check text-[10px] mr-2"></i>
+                    <p class="text-xs font-medium">Daily @ 08:00 AM</p>
+                </div>
+            </div>
+        </div>
+    <% } %>
+
+    <div class="flex items-center space-x-4 mb-10">
+        <div class="p-3 bg-pink-50 rounded-2xl">
+            <i class="fas fa-cake-candles text-2xl text-pink-500"></i>
+        </div>
+        <div>
+            <h2 class="text-3xl font-black text-slate-900 tracking-tight">Birthday Calendar</h2>
+            <p class="text-slate-500">Upcoming celebrations for the Unichem team.</p>
+        </div>
+    </div>
+
+    <% if (typeof success !== 'undefined' || (typeof url !== 'undefined' && url.includes('success'))) { %>
+        <div id="toast" class="mb-6 flex items-center p-4 text-green-800 bg-green-50 rounded-2xl border border-green-100 animate-pulse">
+            <i class="fas fa-check-circle mr-3"></i>
+            <p class="text-sm font-bold">Birthday wish delivered successfully!</p>
+        </div>
+        <script>setTimeout(() => document.getElementById('toast').remove(), 4000);</script>
+    <% } %>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <% if (employees && employees.length > 0) { %>
+            <% employees.forEach(emp => { %>
+                <div class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm flex items-center hover:shadow-md hover:border-pink-100 transition-all cursor-default group">
+                    <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-rose-100 mr-5 group-hover:scale-110 transition-transform">
+                        <%= emp.fullName.charAt(0) %>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-slate-900 text-lg leading-tight"><%= emp.fullName %></h3>
+                        <p class="text-slate-500 text-sm <%= (user && user.role === 'admin') ? 'mb-3' : '' %>"><%= emp.department %></p>
+                        
+                        <% if (user && user.role === 'admin') { %>
+                            <form action="/employees/send-wish/<%= emp._id %>" method="POST" class="wish-form">
+                                <button type="submit" class="text-pink-600 text-xs font-black uppercase tracking-wider flex items-center hover:text-pink-700 transition-colors">
+                                    <i class="fas fa-paper-plane mr-1.5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></i> 
+                                    Send Official Wish
+                                </button>
+                            </form>
+                        <% } %>
+                    </div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <div class="col-span-full py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200 text-center">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-sm mb-4">
+                    <i class="fas fa-calendar-day text-slate-300 text-2xl"></i>
+                </div>
+                <h3 class="text-slate-900 font-bold text-xl">No birthdays today!</h3>
+                <p class="text-slate-500 max-w-xs mx-auto mt-2">There are no team members celebrating today. Check back tomorrow!</p>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.wish-form').forEach(form => {
+        form.addEventListener('submit', function() {
+            const btn = this.querySelector('button');
+            btn.innerHTML = '<i class="fas fa-circle-notch animate-spin mr-1.5"></i> Sending...';
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+        });
+    });
+</script>
+
+</main></div></body></html>

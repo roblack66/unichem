@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Unichem HR Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Montserrat', sans-serif; }</style>
+</head>
+<body class="bg-slate-900 flex items-center justify-center min-h-screen p-4">
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <div class="p-8 pt-12 text-center">
+            <div class="inline-block p-1 rounded-full border-2 border-blue-400 mb-4">
+                <img src="/images/unichem_ghana_group_logo.jpg" alt="Logo" class="w-20 h-20 rounded-full object-contain">
+            </div>
+            <h1 class="text-2xl font-black text-slate-900">HR Portal Login</h1>
+            <p class="text-slate-500 text-sm mt-2">Enter your credentials to manage the team.</p>
+        </div>
+
+        <form action="/auth/login" method="POST" class="p-8 pt-0 space-y-4">
+            <% if (error) { %>
+                <div class="bg-red-50 text-red-600 p-4 rounded-xl text-xs font-bold flex items-center">
+                    <i class="fas fa-exclamation-circle mr-2"></i> <%= error %>
+                </div>
+            <% } %>
+
+            <div>
+                <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Username</label>
+                <input type="text" name="username" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Password</label>
+                <input type="password" name="password" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 transition-all transform active:scale-[0.98]">
+                Sign In
+            </button>
+        </form>
+        
+        <div class="p-6 bg-slate-50 text-center">
+            <p class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Unichem Ghana Group &copy; 2026</p>
+        </div>
+    </div>
+</body>
+</html>
