@@ -1,28 +1,27 @@
+import nodemailer from 'nodemailer';
+
 export const sendEmail = async (to, subject, htmlContent) => {
-    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
-        method: 'POST',
-        headers: {
-            'accept': 'application/json',
-            'api-key': process.env.BREVO_API_KEY,
-            'content-type': 'application/json'
-        },
-        body: JSON.stringify({
-            sender: { 
-                name: "Unichem HR", 
-                email: process.env.EMAIL_USER // Your verified email in Brevo
-            },
-            to: Array.isArray(to) ? to.map(email => ({ email })) : [{ email: to }],
+    try {
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS // The 16-character App Password
+            }
+        });
+
+        const mailOptions = {
+            from: `"Unichem HR" <${process.env.EMAIL_USER}>`,
+            to: Array.isArray(to) ? to.join(',') : to,
             subject: subject,
-            htmlContent: htmlContent
-        })
-    });
+            html: htmlContent
+        };
 
-    if (!response.ok) {
-        const error = await response.json();
-        console.error("❌ BREVO API ERROR:", error);
-        throw new Error('Failed to send email via API');
+        const info = await transporter.sendMail(mailOptions);
+        console.log("✅ Email sent successfully:", info.messageId);
+        return info;
+    } catch (error) {
+        console.error("❌ Email sending failed:", error);
+        throw error;
     }
-
-    console.log("✅ Email sent via API successfully");
-    return await response.json();
 };
